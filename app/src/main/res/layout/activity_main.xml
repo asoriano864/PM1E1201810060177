@@ -55,11 +55,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="15dp"
         android:ems="10"
-        android:inputType="phone"
         android:hint="Telefono de contacto"
+        android:inputType="phone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -115,4 +115,16 @@
         app:layout_constraintTop_toBottomOf="@+id/btnGuardarContacto"
         app:layout_constraintVertical_bias="0.05"
         app:rippleColor="#03A9F4" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Seleccione un pais:"
+        app:layout_constraintBottom_toTopOf="@+id/cmbPaises"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.054"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView"
+        app:layout_constraintVertical_bias="0.548" />
 </androidx.constraintlayout.widget.ConstraintLayout>

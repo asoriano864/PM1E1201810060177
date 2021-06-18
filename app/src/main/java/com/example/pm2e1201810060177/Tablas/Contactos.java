@@ -8,7 +8,7 @@ public class Contactos {
     private String Nota;
     private String Pais;
 
-    public Contactos(Integer Id, String Nombre, String Telefono, String Nota, String Pais){
+    public static void Contactos(Integer Id, String Nombre, String Telefono, String Nota, String Pais){
 
     }
 

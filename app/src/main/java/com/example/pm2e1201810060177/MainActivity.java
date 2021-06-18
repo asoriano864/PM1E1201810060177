@@ -3,6 +3,7 @@ package com.example.pm2e1201810060177;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
@@ -72,6 +73,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 AgregarContacto();
             }
         });
+
+        Button btnListaContactos = (Button) findViewById(R.id.btnListaContactos);
+        btnListaContactos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent lsViewContactos = new Intent(v.getContext(), ListaContactos.class);
+                startActivity(lsViewContactos);
+            }
+        });
     }
 
     @Override
@@ -94,17 +104,28 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         datos.put(Transacciones.Nota, bxNota.getText().toString());
         datos.put(Transacciones.Pais, PaisSeleccionado);
 
-        try{
-            Long Resultado = db.insert(Transacciones.TablaContactos, Transacciones.Id, datos);
+        if(PaisSeleccionado.equals("")){
+            Toast.makeText(getApplicationContext(), "Debe Seleccionar un pais", Toast.LENGTH_LONG).show();
+        }else if(bxNombre.getText().toString().equals("")){
+            Toast.makeText(getApplicationContext(), "Debe Ingresar un Nombre", Toast.LENGTH_LONG).show();
+        }else if(bxTelefono.getText().toString().equals("")){
+            Toast.makeText(getApplicationContext(), "Debe Ingresar un Telefono", Toast.LENGTH_LONG).show();
+        }
+        else{
+            try{
+                Long Resultado = db.insert(Transacciones.TablaContactos, Transacciones.Id, datos);
 
-            Toast.makeText(getApplicationContext(), "Registro guardado", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Registro guardado", Toast.LENGTH_LONG).show();
 
-            ClearForm();
-        }catch(Exception e){
-            Toast.makeText(getApplicationContext(), "Error al guardar el registro", Toast.LENGTH_LONG).show();
+                ClearForm();
+            }catch(Exception e){
+                Toast.makeText(getApplicationContext(), "Error al guardar el registro", Toast.LENGTH_LONG).show();
+            }
+
+            db.close();
         }
 
-        db.close();
+
 
     }
 
