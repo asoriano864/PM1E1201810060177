@@ -1,5 +1,5 @@
 # EXAMEN PROGRAMACION MOVIL 1 - UTH
-CATEDRATICO: Master. Ricardo Lagos
+CATEDRATICO: Master. Ricardo Lagos<br>
   ALUMNOS:
   1. Hector Alberto Soriano - 201810060177
   2. Blanca Rosa Cruz - 201810060452
