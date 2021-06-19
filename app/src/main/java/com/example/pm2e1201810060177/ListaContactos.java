@@ -5,6 +5,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentValues;
@@ -15,10 +16,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -35,8 +39,9 @@ public class ListaContactos extends AppCompatActivity {
     ListView lsViewContactos;
     ArrayList<Contactos> Contactos;
     ArrayList<String> ArregloContactos;
-
+    EditText txtFiltro;
     Integer ContactoSelected = -1;
+    ArrayAdapter adp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +58,28 @@ public class ListaContactos extends AppCompatActivity {
         ObtenerContactos();
 
         /* Creamos un objeto Adapter para asociar los datos del arreglo a el ListView */
-        ArrayAdapter adp = new ArrayAdapter(this, android.R.layout.simple_list_item_1, ArregloContactos);
+        adp = new ArrayAdapter<String>(ListaContactos.this, android.R.layout.simple_list_item_1, ArregloContactos);
         lsViewContactos.setAdapter(adp);
+        lsViewContactos.setTextFilterEnabled(true);
+
+        txtFiltro = (EditText) findViewById(R.id.txtFiltro);
+        txtFiltro.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+                ListaContactos.this.adp.getFilter().filter(arg0);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
         //-----------------------------------------------------------------------------------------------------------------------------------//
 
         //-----------------------------------------------------------------------------------------------------------------------------------//
@@ -63,7 +88,9 @@ public class ListaContactos extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 /*SELECCIONAMOS EL ID CORRESPONDIENTE AL CONTACTO SELECCIONADO */
-                ContactoSelected = Contactos.get(position).getId();
+                ContactoSelected = position;
+
+
             }
         });
         //-----------------------------------------------------------------------------------------------------------------------------------//
@@ -79,13 +106,13 @@ public class ListaContactos extends AppCompatActivity {
                     /*Creamos el objeto de dialogo para la ventana emergente*/
                     AlertDialog.Builder builder;
                     builder = new AlertDialog.Builder(v.getContext());
-                    builder.setMessage("Desea llamar a "+Contactos.get(ContactoSelected-1).getNombre()).setTitle("Llamar Contacto");
+                    builder.setMessage("Desea llamar a "+Contactos.get(ContactoSelected).getNombre()).setTitle("Llamar Contacto");
 
                     /*Boton de dialogo ACEPTAR*/
                     builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             Intent i = new Intent(Intent.ACTION_CALL);
-                            i.setData(Uri.parse("tel:"+Contactos.get(ContactoSelected-1).getTelefono()));
+                            i.setData(Uri.parse("tel:"+Contactos.get(ContactoSelected).getTelefono()));
 
                             if (ContextCompat.checkSelfPermission(getApplicationContext(), CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
                                 startActivity(i);
@@ -122,7 +149,7 @@ public class ListaContactos extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                     if(ContactoSelected>=0){
-                        Integer idS = ContactoSelected-1;
+                        Integer idS = ContactoSelected;
 
                         Intent ActualizarContacto = new Intent(v.getContext(), com.example.pm2e1201810060177.ActualizarContacto.class);
                         ActualizarContacto.putExtra("NOMBRE",Contactos.get(idS).getNombre().toString());
@@ -136,6 +163,28 @@ public class ListaContactos extends AppCompatActivity {
                     }
 
 
+            }
+        });
+        //-----------------------------------------------------------------------------------------------------------------------------------//
+
+        //-----------------------------------------------------------------------------------------------------------------------------------//
+        /*Eliminar Contacto*/
+        Button btnEliminar = findViewById(R.id.btnEliminar);
+        btnEliminar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(ContactoSelected>=0){
+                    try{
+                        String IDEliminar = Contactos.get(ContactoSelected).getId().toString();
+                        Eliminar(IDEliminar);
+                        Intent ListaContactos = new Intent(v.getContext(), ListaContactos.class);
+                        startActivity(ListaContactos);
+                    }catch(Exception e){
+                        Toast.makeText(getApplicationContext(), "Ocurrio un error al eliminar el contacto",Toast.LENGTH_LONG).show();
+                    }
+                }else{
+                    Toast.makeText(getApplicationContext(), "Debe Seleccionar un contacto",Toast.LENGTH_LONG).show();
+                }
             }
         });
         //-----------------------------------------------------------------------------------------------------------------------------------//

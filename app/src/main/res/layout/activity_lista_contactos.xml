@@ -29,7 +29,7 @@
             android:textSize="24sp" />
 
         <EditText
-            android:id="@+id/editTextTextPersonName"
+            android:id="@+id/txtFiltro"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -64,6 +64,7 @@
             android:layout_marginTop="20dp"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="15dp"
+            android:backgroundTint="#5cb85c"
             android:text="Llamar Contacto" />
 
         <LinearLayout
@@ -78,11 +79,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="15dp"
+                android:backgroundTint="#d9534f"
                 android:text="Eliminar Contacto" />
 
             <Button
                 android:id="@+id/btnActualizar"
                 android:layout_width="180dp"
+                android:backgroundTint="#0275d8"
                 android:layout_height="wrap_content"
 
 

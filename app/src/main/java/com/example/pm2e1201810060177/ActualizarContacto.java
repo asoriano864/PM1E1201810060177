@@ -32,7 +32,6 @@ public class ActualizarContacto extends AppCompatActivity implements AdapterView
     EditText bxTelefono;
     EditText bxNota;
     Spinner cmbPais;
-
     String PaisSelected = "";
 
     ArrayList<String> paises = new ArrayList<String>();
@@ -58,25 +57,14 @@ public class ActualizarContacto extends AppCompatActivity implements AdapterView
 
         cmbPais = (Spinner) findViewById(R.id.cmbPaisUpd);
         cmbPais.setOnItemSelectedListener(this);
-
-        for(Integer i = 0; i < paises.size(); i++){
-            if(cmbPais.getItemAtPosition(i).equals(paises.get(i))){
-                PaisSelected = paises.get(i);
-                cmbPais.setSelection(i);
-            }
-        }
-
         ArrayAdapter adp = new ArrayAdapter(this,android.R.layout.simple_spinner_item, paises);
-
-        adp.setDropDownViewResource(
-                android.R.layout.simple_spinner_dropdown_item);
-
+        adp.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         cmbPais.setAdapter(adp);
 
         cmbPais.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
+                PaisSelected = paises.get(position);
             }
 
             @Override
@@ -93,13 +81,19 @@ public class ActualizarContacto extends AppCompatActivity implements AdapterView
         bxTelefono.setText(Telefono);
         bxNota.setText(Nota);
 
+        for(Integer i = 0; i < paises.size(); i++){
+            if(Pais.equals(paises.get(i))){
+                cmbPais.setSelection(i);
+            }
+        }
+
         Button btnActualizar = findViewById(R.id.btnActualizarContacto);
         btnActualizar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                if(!bxNombre.getText().toString().equals("") || !bxTelefono.getText().toString().equals("") || !bxTelefono.getText().toString().equals("")){
-                    Actualizar(Id.toString(),bxNombre.getText().toString(),bxTelefono.getText().toString(),bxNota.getText().toString(),Pais);
+                if(!bxNombre.getText().toString().equals("") || !bxTelefono.getText().toString().equals("") || !bxTelefono.getText().toString().equals("") || !PaisSelected.equals("")){
+                    Actualizar(Id.toString(),bxNombre.getText().toString(),bxTelefono.getText().toString(),bxNota.getText().toString(),PaisSelected);
                     Intent ListaContactos = new Intent(v.getContext(), ListaContactos.class);
                     startActivity(ListaContactos);
                 }else{
