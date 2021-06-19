@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">PM2E1201810060177</string>
-
+    <string name="MY_PERMISSIONS_REQUEST_CALL_PHONE">0</string>
 </resources>

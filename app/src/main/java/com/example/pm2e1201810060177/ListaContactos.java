@@ -1,11 +1,16 @@
 package com.example.pm2e1201810060177;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
@@ -20,6 +25,7 @@ import android.widget.Toast;
 
 import com.example.pm2e1201810060177.Tablas.Contactos;
 import com.example.pm2e1201810060177.Transacciones.Transacciones;
+import static android.Manifest.permission.CALL_PHONE;
 
 import java.util.ArrayList;
 
@@ -30,7 +36,7 @@ public class ListaContactos extends AppCompatActivity {
     ArrayList<Contactos> Contactos;
     ArrayList<String> ArregloContactos;
 
-    Integer ContactoSelected = null;
+    Integer ContactoSelected = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,18 +75,23 @@ public class ListaContactos extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 /*Se valida que exista un contacto seleccionado*/
-                if(!ContactoSelected.equals("")){
+                if(!ContactoSelected.equals(null)){
                     /*Creamos el objeto de dialogo para la ventana emergente*/
                     AlertDialog.Builder builder;
                     builder = new AlertDialog.Builder(v.getContext());
-                    builder.setMessage("Desea llamar a "+Contactos.get(ContactoSelected).getNombre()).setTitle("Llamar Contacto");
+                    builder.setMessage("Desea llamar a "+Contactos.get(ContactoSelected-1).getNombre()).setTitle("Llamar Contacto");
 
                     /*Boton de dialogo ACEPTAR*/
                     builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            // User clicked OK button
-                            Intent i = new Intent(Intent.ACTION_CALL, Uri.parse("tel:"+Contactos.get(ContactoSelected).getTelefono()));
-                            startActivity(i);
+                            Intent i = new Intent(Intent.ACTION_CALL);
+                            i.setData(Uri.parse("tel:"+Contactos.get(ContactoSelected-1).getTelefono()));
+
+                            if (ContextCompat.checkSelfPermission(getApplicationContext(), CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+                                startActivity(i);
+                            } else {
+                                requestPermissions(new String[]{CALL_PHONE}, 1);
+                            }
                         }
                     });
 
@@ -103,6 +114,32 @@ public class ListaContactos extends AppCompatActivity {
 
         //-----------------------------------------------------------------------------------------------------------------------------------//
 
+
+        //-----------------------------------------------------------------------------------------------------------------------------------//
+        /*Mandar datos a la actividad de actualizar contactos*/
+        Button btnActualizarContacto = (Button) findViewById(R.id.btnActualizar);
+        btnActualizarContacto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                    if(ContactoSelected>=0){
+                        Integer idS = ContactoSelected-1;
+
+                        Intent ActualizarContacto = new Intent(v.getContext(), com.example.pm2e1201810060177.ActualizarContacto.class);
+                        ActualizarContacto.putExtra("NOMBRE",Contactos.get(idS).getNombre().toString());
+                        ActualizarContacto.putExtra("TELEFONO",Contactos.get(idS).getTelefono().toString());
+                        ActualizarContacto.putExtra("NOTA",Contactos.get(idS).getNota().toString());
+                        ActualizarContacto.putExtra("PAIS",Contactos.get(idS).getPais().toString());
+                        ActualizarContacto.putExtra("ID",Contactos.get(idS).getId().toString());
+                        startActivity(ActualizarContacto);
+                    }else{
+                        Toast.makeText(getApplicationContext(), "Debe Seleccionar un contacto",Toast.LENGTH_LONG).show();
+                    }
+
+
+            }
+        });
+        //-----------------------------------------------------------------------------------------------------------------------------------//
+
     }
 
     private void ObtenerContactos(){
@@ -122,8 +159,6 @@ public class ListaContactos extends AppCompatActivity {
             contacto.setPais(cursor.getString(4));
             Contactos.add(contacto);
         }
-
-
         fillListaContactos();
 
     }
@@ -133,6 +168,32 @@ public class ListaContactos extends AppCompatActivity {
         for(int i = 0;i<Contactos.size();i++){
             ArregloContactos.add((i+1) + " - " + Contactos.get(i).getNombre() + " (" + Contactos.get(i).getTelefono() + ")");
         }
+    }
+
+    private void Eliminar(String id){
+        SQLiteDatabase db = conexion.getWritableDatabase();
+        String[] params = {id};
+        String WhereCondition = Transacciones.Id + "= ?";
+        db.delete(Transacciones.TablaContactos, WhereCondition, params);
+        Toast.makeText(getApplicationContext(), "Registro Eliminado con exito", Toast.LENGTH_LONG).show();
+    }
+
+    private void Actualizar(String id, String Nombre, String Telefono, String Nota, String Pais){
+        SQLiteDatabase db = conexion.getWritableDatabase();
+        String[] params = {id};
+        ContentValues datos = new ContentValues();
+        datos.put(Transacciones.Nombre, Nombre);
+        datos.put(Transacciones.Telefono, Telefono);
+        datos.put(Transacciones.Nota, Nota);
+        datos.put(Transacciones.Pais, Pais);
+        try{
+            db.update(Transacciones.TablaContactos,datos,Transacciones.Id + "=?", params);
+            Toast.makeText(getApplicationContext(), "Datos actualizados con exito",Toast.LENGTH_LONG).show();
+        }catch(Exception e){
+            Toast.makeText(getApplicationContext(), "Error al actuaizar los datos",Toast.LENGTH_LONG).show();
+        }
+
+
     }
 
 
